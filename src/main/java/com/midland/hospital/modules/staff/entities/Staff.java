@@ -1,6 +1,7 @@
 package com.midland.hospital.modules.staff.entities;
 
 import com.midland.hospital.core.AbstractEntity;
+import com.midland.hospital.modules.staff.dto.StaffProfileDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,4 +18,11 @@ public class Staff extends AbstractEntity {
     private String name;
     private String uuid;
 
+    public Staff(StaffProfileDTO profileDTO) {
+        this.name = profileDTO.getName();
+        this.uuid = profileDTO.getName();
+    }
+
+    public Staff() {
+    }
 }

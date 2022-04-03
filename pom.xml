@@ -47,6 +47,13 @@
 			<version>RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>4.6.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -13,4 +13,15 @@ public class StaffProfileDTO {
     private String name;
     private String uuid;
     private Date registrationDate;
+
+    public StaffProfileDTO(Long id, String name, String uuid, Date registrationDate) {
+        this.id = id;
+        this.name = name;
+        this.uuid = uuid;
+        this.registrationDate = registrationDate;
+    }
+
+    public StaffProfileDTO() {
+
+    }
 }

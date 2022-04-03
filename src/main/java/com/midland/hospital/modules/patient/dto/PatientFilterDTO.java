@@ -9,6 +9,15 @@ import java.util.Date;
 @Getter
 public class PatientFilterDTO {
 
+    public PatientFilterDTO(int age) {
+        this.age = age;
+    }
+
+    public PatientFilterDTO(Date fromDate, Date endDate) {
+        this.fromDate = fromDate;
+        this.endDate = endDate;
+    }
+
     private int age;
     private Date fromDate;
     private Date endDate;

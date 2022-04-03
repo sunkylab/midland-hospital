@@ -15,4 +15,6 @@ public interface PatientService {
 
     void removePatients(PatientFilterDTO filterDTO);
 
+    Long getNumberOfRows();
+
 }

@@ -4,8 +4,10 @@ import com.midland.hospital.modules.staff.dto.StaffProfileDTO;
 
 public interface StaffService {
 
-    void createStaffRecord(StaffProfileDTO profileDTO);
+    String createStaffRecord(StaffProfileDTO profileDTO);
 
-    void updateStaffRecord(StaffProfileDTO profileDTO, Long profileId);
+    void updateStaffRecord(StaffProfileDTO profileDTO, String profileUUID);
+
+    StaffProfileDTO getStaffRecord(String profileUUID);
 
 }

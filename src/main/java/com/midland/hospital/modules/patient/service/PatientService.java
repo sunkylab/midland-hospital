@@ -11,9 +11,9 @@ public interface PatientService {
 
     PatientProfileDTO getPatientProfile(Long patientId);
 
-    List<PatientProfileDTO> getPatients(PatientFilterDTO filterDTO);
+    List<PatientProfileDTO> getPatients(PatientFilterDTO filterDTO, int page,int size);
 
-    void removePatients(PatientFilterDTO filterDTO);
+    Long removePatients(PatientFilterDTO filterDTO);
 
     Long getNumberOfRows();
 

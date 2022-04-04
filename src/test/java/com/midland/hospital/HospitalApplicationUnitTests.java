@@ -1,6 +1,6 @@
 package com.midland.hospital;
 
-import com.midland.hospital.core.exceptions.StaffUpdateException;
+import com.midland.hospital.core.exceptions.AppBaseException;
 import com.midland.hospital.modules.patient.dto.PatientFilterDTO;
 import com.midland.hospital.modules.patient.dto.PatientProfileDTO;
 import com.midland.hospital.modules.patient.service.PatientService;
@@ -35,7 +35,7 @@ class HospitalApplicationUnitTests {
 
 		//Then
 		Assertions.assertNotNull(uuid);
-		Assertions.assertTrue(uuid.length() == 16);
+		Assertions.assertTrue(uuid.length() == 36);
 	}
 
 
@@ -53,7 +53,6 @@ class HospitalApplicationUnitTests {
 
 		//Then
 		Assertions.assertEquals(updatedRecord.getName(),profileDTO.getName());
-		Assertions.assertDoesNotThrow(() -> StaffUpdateException.class);
 	}
 
 	@Test
@@ -67,7 +66,8 @@ class HospitalApplicationUnitTests {
 		staffService.createStaffRecord(profileDTO);
 
 		//Then
-		Assertions.assertThrows(StaffUpdateException.class,() -> staffService.updateStaffRecord(profileDTO,"uuid"));
+		Assertions.assertThrows(AppBaseException.class,() -> staffService.updateStaffRecord(profileDTO,"uuid"));
+		Assertions.assertThrowsExactly(AppBaseException.class,() -> staffService.updateStaffRecord(profileDTO,"uuid"),"Record Not Found");
 	}
 
 
@@ -77,25 +77,25 @@ class HospitalApplicationUnitTests {
 		PatientFilterDTO noFilter = null;
 
 		//When
-		List<PatientProfileDTO> dtoList = patientService.getPatients(noFilter);
+		List<PatientProfileDTO> dtoList = patientService.getPatients(noFilter,0,200);
 
 		//Then
-		Assertions.assertEquals(dtoList.size(),100);
+		Assertions.assertEquals(dtoList.size(),200);
 	}
 
 	@Test
 	void shouldReturnPatientRecordsThatMatchFilterOnly() {
 		//Given
-		PatientFilterDTO ageFilter = new PatientFilterDTO(2);
+		PatientFilterDTO ageFilter = new PatientFilterDTO(0);
 		PatientFilterDTO dateRangeFilter = new PatientFilterDTO(new Date(),new Date());
 
 		//When
-		List<PatientProfileDTO> dtoList = patientService.getPatients(ageFilter);
-		List<PatientProfileDTO> dtoList2 = patientService.getPatients(dateRangeFilter);
+		List<PatientProfileDTO> dtoList = patientService.getPatients(ageFilter,0,20);
+		List<PatientProfileDTO> dtoList2 = patientService.getPatients(dateRangeFilter,0,10);
 
 		//Then
 		Assertions.assertEquals(dtoList.size(),20);
-		Assertions.assertEquals(dtoList2.size(),50);
+		Assertions.assertEquals(dtoList2.size(),10);
 	}
 
 	@Test
@@ -105,12 +105,12 @@ class HospitalApplicationUnitTests {
 
 		//When
 		patientService.removePatients(noFilter);
-		List<PatientProfileDTO> dtoList = patientService.getPatients(noFilter);
+		List<PatientProfileDTO> dtoList = patientService.getPatients(noFilter,0,200);
 		Long actualDataCount = patientService.getNumberOfRows();
 
 		//Then
 		Assertions.assertEquals(dtoList.size(),0);
-		Assertions.assertEquals(actualDataCount,100);
+		Assertions.assertEquals(actualDataCount,200);
 	}
 
 }

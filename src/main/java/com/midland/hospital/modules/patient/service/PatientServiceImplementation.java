@@ -6,9 +6,14 @@ import com.midland.hospital.modules.patient.dto.PatientProfileDTO;
 import com.midland.hospital.modules.patient.entities.Patient;
 import com.midland.hospital.modules.patient.entities.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientServiceImplementation implements PatientService{
@@ -19,7 +24,7 @@ public class PatientServiceImplementation implements PatientService{
     @Override
     public void createPatientRecord(PatientProfileDTO profile) {
 
-        Patient patient = this.getPatientRecord(profile.getName());
+        Patient patient = patientRepository.findByName(profile.getName());
         if(patient != null){
             throw new AppBaseException("Record Already Exists");
         }
@@ -41,23 +46,48 @@ public class PatientServiceImplementation implements PatientService{
     }
 
     @Override
-    public List<PatientProfileDTO> getPatients(PatientFilterDTO filterDTO) {
-        return patientRepository.fetchPatients();
+    public List<PatientProfileDTO> getPatients(PatientFilterDTO filterDTO,int page,int size) {
+        if(filterDTO!=null && filterDTO.getAge() < 0 ){
+            throw new AppBaseException("Age should be equal or greater than zero");
+        }
+
+        Pageable pageable = PageRequest.of(page,size);
+
+        if(filterDTO == null){
+            return patientRepository.fetchAllPatients(pageable);
+        }else{
+            return patientRepository.fetchPatientsWhereAgeIsGreaterThan(filterDTO.getAge(),pageable);
+        }
     }
 
     @Override
-    public void removePatients(PatientFilterDTO filterDTO) {
+    public Long removePatients(PatientFilterDTO filterDTO) {
+        List<Patient> patients;
+        if(filterDTO == null){
+            patients = (List<Patient>) patientRepository.findAll();
+        }else{
+            patients = patientRepository.findByLastVisitDateBetween(filterDTO.getFromDate(),filterDTO.getEndDate());
+        }
+
+        patients = patients.parallelStream().map(patient -> {
+            patient.setDelFlag("Y");
+            patient.setDeletedOn(new Date());
+            return patient;
+        }).collect(Collectors.toList());
+
+        patientRepository.saveAll(patients);
+
+        return Long.valueOf(patients.size());
 
     }
 
     @Override
     public Long getNumberOfRows() {
-        //try to use count directly
-        return patientRepository.getPatientCount().getCount();
+        List<Object[]> result =  patientRepository.getPatientCount();
+        BigInteger rowResult = (BigInteger) result.get(0)[0];
+        Long count = Long.valueOf(rowResult.toString());
+
+        return count;
     }
 
-
-    private Patient getPatientRecord(String name){
-        return patientRepository.findByName(name);
-    }
 }

@@ -7,6 +7,8 @@ import com.midland.hospital.modules.staff.entities.repository.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StaffServiceImplementation implements StaffService{
 
@@ -23,7 +25,6 @@ public class StaffServiceImplementation implements StaffService{
 
         staff = new Staff(profileDTO);
         staff = staffRepository.save(staff);
-
         return staff.getUuid();
     }
 
@@ -44,5 +45,10 @@ public class StaffServiceImplementation implements StaffService{
     public StaffProfileDTO getStaffRecord(String profileUUID) {
         StaffProfileDTO profileDTO =  staffRepository.findStaffProfileByUuid(profileUUID);
         return profileDTO;
+    }
+
+    @Override
+    public List<StaffProfileDTO> getAllStaffs() {
+        return staffRepository.findAllStaffs();
     }
 }
